@@ -21,6 +21,16 @@ class TestBuildMenu(TestCase):
 
     menu = BuildMenu()
 
+    def test_getting_input_main_menu(self):
+        """
+        Input to main Menu
+        :return:
+        """
+        print "Getting input from the user"
+        with mock_raw_input("1"):
+            self.assertEqual(self.menu.main_menu(), "1")
+
+        print "Main Menu Entered"
 
     def test_getting_input(self):
         """
@@ -31,8 +41,7 @@ class TestBuildMenu(TestCase):
         with mock_raw_input("berries"):
             self.assertEqual(self.menu.get_user_input(), "berries")
 
-        print "Came here"
-
+        print "Found Item"
 
     def test_find_food(self):
         """
@@ -41,9 +50,9 @@ class TestBuildMenu(TestCase):
         :return:
         """
 
-        self.menu.read_csv()
+        self.menu.read_csv('WHFoods CSV For Zahid.csv')
 
-        results = self.menu.find_food("berries")
+        results = self.menu.build_menu_from_input("berries")
         # Ensuring that result is equal to one "BlackBerries" is a record found in the file
 
         self.assertEqual(results.len, 1, "The records are not found there must be some problem")
