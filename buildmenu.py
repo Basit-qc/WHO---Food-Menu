@@ -222,7 +222,7 @@ class BuildMenu():
             filtered_col = results[1]
             largest = self.largest_in_menu(file_menu, target, filtered_col, self.indexes)
             print 'Item with largest value of Quantity:Target ratio in MENU is\n' + str(largest)
-            raw_input("Press any key to continue >> ")
+            raw_input("Press 'Enter key' to continue >> ")
             lowest = self.lowest_in_database(file_database, target, filtered_col, self.indexes, largest)
             self.validate_multiple_foods(file_database, target, filtered_col, largest, lowest)
         else:
