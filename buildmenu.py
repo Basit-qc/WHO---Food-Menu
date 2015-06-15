@@ -229,33 +229,26 @@ class BuildMenu():
             print 'Menu is Empty, Please provide an initial starting point'
 
     def validate_multiple_foods(self, file_database, target, filtered_col, largest, lowest):
+        not_added = list()
         if lowest:
-            # for food in lowest:
+            # finding suitable foods from database:
             success, current_food_element, index = self.to_remove_food_items(file_database, filtered_col, target,
                                                                              lowest)
-            while success is not False:
-                if index != '':
-                    lowest.pop(index)
-                else:
-                    show = 'NO food is there to be added '
-                    return show
-                print 'Results:    Tolerance Rule Satisfied for: ' + str(current_food_element)
-                self.calculate_last_row()
-                print '            New Food has been added to the Menu'
-                print '            You can see the Updated Menu in Menu.csv file'
+            while index != '':
+                if success:
+                    print 'Results:    Tolerance Rule Satisfied for: ' + str(current_food_element)
+                    self.calculate_last_row()
+                    print '            New Food has been added to the Menu'
+                    print '            You can see the Updated Menu in Menu.csv file'
+                elif not success:
+                    not_added.append(current_food_element)
+                lowest.pop(index)
                 success, current_food_element, index = self.to_remove_food_items(file_database, filtered_col,
                                                                                  target, lowest)
             user_choice = raw_input('Do you want to see Food Items that failed the Tolerance rule?(yes/no) ')
-            if not success and user_choice == 'yes':
-                while success is not True:
-                    if index != '':
-                        lowest.pop(index)
-                    else:
-                        show = 'NO food is there to be added '
-                        return show
-                    print 'Results: Tolerance Rule Violated for: ' + str(current_food_element)
-                    success, current_food_element, index = self.to_remove_food_items(file_database, filtered_col,
-                                                                                     target, lowest)
+            if user_choice == 'yes':
+                for food in not_added:
+                    print 'Results: Tolerance Rule Violated for: ' + str(food)
 
     def to_remove_food_items(self, file_database, filtered_col, target, lowest):
         """
@@ -280,6 +273,8 @@ class BuildMenu():
         # print 'Checking for Tolerance Rule'
         new_data_for_menu = self.item_to_add_in_menu(file_database, required_food['food_name'])
         success = self.check_tolerance(new_data_for_menu, filtered_col, target)
+        if not success:
+            new_data_for_menu.pop()
         return success, required_food['food_name'], random_index
 
     def check_tolerance(self, new_data_for_menu, filtered_col, target):
@@ -318,6 +313,7 @@ class BuildMenu():
         :param filtered_col:
         :return:
         """
+        formula = ''
         error = False
         for column in filtered_col:
             ratios = 0
@@ -326,9 +322,10 @@ class BuildMenu():
                     ratios += float(dest['value'])
                     formula = ratios / float(target[column]) * 100
                     if formula > 110:
-                        ratios = 0
                         error = True
                         break
+            if error:
+                break
         return error
 
     def update_menu(self, food):
